@@ -106,10 +106,10 @@ const App: FC = () => {
         bottom: '100px',
         left: '10vw',
         width: '80vw',
-        height: '32px',
-        padding: '0px 20px',
+        height: '24px',
+        padding: '0px 12px',
         backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        borderRadius: '16px',
+        borderRadius: '12px',
         touchAction: 'pan-x',
         display: 'flex',
       }}>

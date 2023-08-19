@@ -5,6 +5,7 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderMark,
+  Tooltip,
 } from '@chakra-ui/react'
 import { TargetTime } from '../hooks/useTargetTimes'
 
@@ -27,31 +28,34 @@ export const TargetTimeSlider: FC<{
       aria-label='slider-time'
       defaultValue={latestTimeIndex}
       min={0}
-      max={targetTimes.length}
+      max={targetTimes.length - 1}
       step={1}
       onChange={onChangeIndex}
     >
       {/* Slider labels for the oldest, current, and newest time */}
-      {[0, latestTimeIndex, targetTimes.length].map((idx) => (
+      {[0, latestTimeIndex, targetTimes.length - 1].map((idx) => (
         <SliderMark
           key={idx}
           value={idx}
-          style={{ marginTop: '12px', position: 'absolute', transform: 'translateX(-50%)', fontSize: 'sm' }}
+          style={{ marginTop: '16px', position: 'absolute', transform: 'translateX(-50%)', fontSize: 'xs', color: 'gray' }}
         >
           {timeStringToHourMinutes(targetTimes[idx]?.validtime)}
         </SliderMark>
       ))}
       {/* Slider label for the selected time */}
-      <SliderMark
-        value={timeIndex}
-        textAlign='center'
+      <Tooltip
+        hasArrow
+        bg='blue.500'
+        color='white'
+        placement='top'
+        isOpen={true}
+        label={timeStringToHourMinutes(targetTimes[timeIndex]?.validtime)}
       >
-        {timeStringToHourMinutes(targetTimes[timeIndex]?.validtime)}
-      </SliderMark>
+        <SliderThumb />
+      </Tooltip>
       <SliderTrack>
         <SliderFilledTrack />
       </SliderTrack>
-      <SliderThumb />
     </Slider>
   )
 }
