@@ -11,10 +11,10 @@ import './App.css'
 const options: MapboxOptions = {
   accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
   container: 'mapbox-map',
-  style: 'mapbox://styles/mapbox/light-v10',
+  // style: 'mapbox://styles/mapbox/light-v10',
   localIdeographFontFamily: 'sans-serif',
   center: [139.7, 35.7],
-  zoom: 8
+  zoom: 8,
 }
 const LAYER_TRANSITION_MSEC = 400
 
