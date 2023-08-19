@@ -10,7 +10,8 @@ import { LayerButton } from './components/LayerButton'
 import './App.css'
 
 const options: MapboxOptions = {
-  accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
+  // token: only for public usage (URL restricted)
+  accessToken: "pk.eyJ1Ijoic3cxMjI3IiwiYSI6ImNrbngyazRhcjBtY3Iyd3RnODhjbDhscWsifQ.6Uc-Lboqa0WhZbnnFJWFSA",
   container: 'mapbox-map',
   // style: 'mapbox://styles/mapbox/light-v10',
   localIdeographFontFamily: 'sans-serif',
