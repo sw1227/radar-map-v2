@@ -4,6 +4,7 @@ import { useTargetTimes, TargetTime } from './hooks/useTargetTimes'
 import { Box } from '@chakra-ui/react'
 import { TargetTimeSlider } from './components/TargetTimeSlider'
 import { GpsButton } from './components/GpsButton'
+import { RefreshButton } from './components/RefreshButton'
 import './App.css'
 
 const options: MapboxOptions = {
@@ -70,7 +71,7 @@ const App: FC = () => {
   const [map, setMap] = useState<mapboxgl.Map | null>(null)
   const [isMapLoaded, setIsMapLoaded] = useState(false)
   const [timeIndex, setTimeIndex] = useState<number | null>(null)
-  const { targetTimes, latestTimeIndex } = useTargetTimes()
+  const { targetTimes, latestTimeIndex, refreshTargetTimes } = useTargetTimes()
   const [renderedTime, setRenderedTime] = useState<TargetTime | null>(null)
   const [location, setLocation] = useState<{ lng: number, lat: number } | null>(null)
   const gpsMarker = useRef<mapboxgl.Marker | null>(null)
@@ -135,6 +136,7 @@ const App: FC = () => {
         )}
       </Box>
       <GpsButton onChangeLocation={setLocation} />
+      <RefreshButton onClick={refreshTargetTimes} />
     </>
   )
 }

@@ -16,20 +16,24 @@ export const useTargetTimes = () => {
   const [targetTimes, setTargetTimes] = useState<TargetTime[]>([])
   const [latestTimeIndex, setLatestTimeIndex] = useState<number | null>(null)
 
-  useEffect(() => {
-    Promise.all([
+  const fetchTargetTimes = async () => {
+    const [pastData, futureData] = await Promise.all([
       fetch(jsonUrls.past).then(res => res.json()),
       fetch(jsonUrls.future).then(res => res.json())
-    ]).then(([pastData, futureData]) => {
-      // Past data: list of times when observed radar tiles are available
-      // Future data: list of times when forecasted radar tiles are available
-      const targetTimes = [...futureData ?? [], ...pastData ?? []].reverse()
-      // pastData and futureData are descending → targetTimes is ascending
-      setTargetTimes(targetTimes)
-      const latestIndex = pastData?.length ? pastData.length - 1 : 0 // Index of latest observed time
-      setLatestTimeIndex(latestIndex)
-    })
+    ])
+
+    // Past data: list of times when observed radar tiles are available
+    // Future data: list of times when forecasted radar tiles are available
+    const targetTimes = [...futureData ?? [], ...pastData ?? []].reverse()
+    // pastData and futureData are descending → targetTimes is ascending
+    setTargetTimes(targetTimes)
+    const latestIndex = pastData?.length ? pastData.length - 1 : 0 // Index of latest observed time
+    setLatestTimeIndex(latestIndex)
+  }
+
+  useEffect(() => {
+    fetchTargetTimes()
   }, [])
 
-  return { targetTimes, latestTimeIndex }
+  return { targetTimes, latestTimeIndex, refreshTargetTimes: fetchTargetTimes }
 }
