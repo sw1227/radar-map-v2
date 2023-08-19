@@ -1,8 +1,9 @@
-import { useState, useEffect, FC } from 'react'
+import { useState, useEffect, useRef, FC } from 'react'
 import mapboxgl, { MapboxOptions } from 'mapbox-gl'
 import { useTargetTimes, TargetTime } from './hooks/useTargetTimes'
 import { Box } from '@chakra-ui/react'
 import { TargetTimeSlider } from './components/TargetTimeSlider'
+import { GpsButton } from './components/GpsButton'
 import './App.css'
 
 const options: MapboxOptions = {
@@ -71,6 +72,8 @@ const App: FC = () => {
   const [timeIndex, setTimeIndex] = useState<number | null>(null)
   const { targetTimes, latestTimeIndex } = useTargetTimes()
   const [renderedTime, setRenderedTime] = useState<TargetTime | null>(null)
+  const [location, setLocation] = useState<{ lng: number, lat: number } | null>(null)
+  const gpsMarker = useRef<mapboxgl.Marker | null>(null)
 
   // Initialize map on first render
   useEffect(() => {
@@ -97,6 +100,15 @@ const App: FC = () => {
     setRenderedTime(targetTime)
   }, [isMapLoaded, timeIndex, targetTimes, map, renderedTime])
 
+  // When location is changed by the GPS button, add a marker and move the map to the location
+  useEffect(() => {
+    if (!isMapLoaded || !location || !map) return
+    if (gpsMarker.current) gpsMarker.current.remove()
+    const { lng, lat } = location
+    gpsMarker.current = new mapboxgl.Marker({ color: 'teal' }).setLngLat([lng, lat]).addTo(map)
+    map.flyTo({ center: [lng, lat] })
+  }, [isMapLoaded, location, map])
+
 
   return (
     <>
@@ -122,6 +134,7 @@ const App: FC = () => {
           />
         )}
       </Box>
+      <GpsButton onChangeLocation={setLocation} />
     </>
   )
 }
