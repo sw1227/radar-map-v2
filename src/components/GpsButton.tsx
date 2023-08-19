@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState, useCallback } from 'react'
 import { Icon, IconButton } from '@chakra-ui/react'
 import { MdGpsFixed } from 'react-icons/md'
 
@@ -8,7 +8,7 @@ export const GpsButton: FC<{
   const [isGettingLocation, setIsGettingLocation] = useState(false)
 
   // GPS button click handler
-  const handleClickGps = () => {
+  const handleClickGps = useCallback(() => {
     if (navigator.geolocation) {
       setIsGettingLocation(true)
       navigator.geolocation.getCurrentPosition(
@@ -28,7 +28,12 @@ export const GpsButton: FC<{
     } else {
       alert('Your browser does not support getting current location.')
     }
-  }
+  }, [onChangeLocation, setIsGettingLocation])
+
+  // Get current location on first render
+  useEffect(() => {
+    handleClickGps()
+  }, [handleClickGps])
 
   return (
     <IconButton
@@ -39,6 +44,7 @@ export const GpsButton: FC<{
       icon={<Icon as={MdGpsFixed} />}
       onClick={handleClickGps}
       isLoading={isGettingLocation}
+      disabled={isGettingLocation}
       style={{
         position: 'absolute',
         bottom: '40px',
