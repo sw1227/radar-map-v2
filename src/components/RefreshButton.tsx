@@ -11,7 +11,7 @@ export const RefreshButton: FC<{
     <IconButton
       isRound={true}
       variant='solid'
-      aria-label='Done'
+      aria-label='refresh'
       fontSize='20px'
       icon={<Icon as={MdRefresh} />}
       onClick={() => {

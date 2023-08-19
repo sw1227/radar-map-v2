@@ -39,7 +39,7 @@ export const GpsButton: FC<{
     <IconButton
       isRound={true}
       variant='solid'
-      aria-label='Done'
+      aria-label='gps'
       fontSize='20px'
       icon={<Icon as={MdGpsFixed} />}
       onClick={handleClickGps}

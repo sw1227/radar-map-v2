@@ -9,13 +9,13 @@ export const CompassButton: FC<{
     <IconButton
       isRound={true}
       variant='solid'
-      aria-label='Done'
+      aria-label='compass'
       fontSize='20px'
       icon={<Icon as={CiCompass1} />}
       onClick={onClick}
       style={{
         position: 'absolute',
-        bottom: '180px',
+        bottom: '230px',
         right: '10px',
         touchAction: 'none',
       }}

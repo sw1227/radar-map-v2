@@ -6,6 +6,7 @@ import { TargetTimeSlider } from './components/TargetTimeSlider'
 import { GpsButton } from './components/GpsButton'
 import { RefreshButton } from './components/RefreshButton'
 import { CompassButton } from './components/CompassButton'
+import { LayerButton } from './components/LayerButton'
 import './App.css'
 
 const options: MapboxOptions = {
@@ -18,7 +19,7 @@ const options: MapboxOptions = {
 }
 const LAYER_TRANSITION_MSEC = 400
 
-const targetTimeToId = (targetTime: TargetTime) => {
+const targetTimeToRadarId = (targetTime: TargetTime) => {
   const suffix = `${targetTime.basetime}-${targetTime.validtime}`
   return {
     sourceId: `radar-source-${suffix}`,
@@ -28,7 +29,7 @@ const targetTimeToId = (targetTime: TargetTime) => {
 
 // Add rain radar layer to the map for the given targetTime
 const addRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
-  const { sourceId, layerId } = targetTimeToId(targetTime)
+  const { sourceId, layerId } = targetTimeToRadarId(targetTime)
   const radarTileUrl = `https://www.jma.go.jp/bosai/jmatile/data/nowc/${targetTime.basetime}/none/${targetTime.validtime}/surf/hrpns/{z}/{x}/{y}.png`
 
   // By setting maxzoom to only source, ovezooming works
@@ -57,7 +58,7 @@ const addRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
 }
 
 const removeRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
-  const { sourceId, layerId } = targetTimeToId(targetTime)
+  const { sourceId, layerId } = targetTimeToRadarId(targetTime)
   setTimeout(() => {
     if (typeof map.getLayer(layerId) !== 'undefined') {
       map.removeLayer(layerId)
@@ -121,6 +122,63 @@ const App: FC = () => {
     map?.flyTo({ bearing: 0 })
   }, [map])
 
+  // When the layer is selected, add the selected layer
+  const handleSelectLayer = useCallback((selectedLayer: { url: string } | null) => {
+    if (!map) return
+
+    // Use fixed id for the source and layer of GSI tile
+    const sourceId = `gsi-source`
+    const layerId = `gsi-layer`
+
+    // If no layer is selected, remove the GSI tile layer and return
+    if (!selectedLayer) {
+      if (map.getLayer(layerId)) map.removeLayer(layerId)
+      return
+    }
+
+    // Add or update the raster source for GSI tile
+    const source = map.getSource(sourceId)
+    if (!source) {
+      map.addSource(sourceId, {
+        type: 'raster',
+        tiles: [selectedLayer.url],
+        tileSize: 256,
+        minzoom: 4,
+        maxzoom: 16,
+        attribution: '地理院タイル(色別標高図の海域部は海上保安庁海洋情報部の資料を使用して作成)'
+      })
+    } else if (source.type === 'raster') { // type guard for source.tiles
+      source.tiles = [selectedLayer.url]
+    }
+
+    // Add or update the raster layer for GSI tile
+    const layer = map.getLayer(layerId)
+    if (!layer) {
+      map.addLayer({
+        id: layerId,
+        type: 'raster',
+        source: sourceId,
+        paint: {
+          'raster-opacity': 0.6
+        },
+      })
+    } else {
+      map.removeLayer(layerId)
+      map.addLayer({
+        id: layerId,
+        type: 'raster',
+        source: sourceId,
+        paint: {
+          'raster-opacity': 0.6
+        },
+      })
+    }
+
+    // Bring the radar layer to the front
+    const radarLayerId = renderedTime ? targetTimeToRadarId(renderedTime).layerId : null
+    if (radarLayerId) map.moveLayer(radarLayerId)
+  }, [map, renderedTime])
+
   return (
     <>
       <div id="mapbox-map" />
@@ -147,6 +205,7 @@ const App: FC = () => {
       </Box>
       <GpsButton onChangeLocation={setLocation} />
       <RefreshButton onClick={refreshTargetTimes} />
+      <LayerButton onSelectLayer={handleSelectLayer}/>
       {shouldShowCompass && <CompassButton onClick={handleClickCompass} />}
     </>
   )
