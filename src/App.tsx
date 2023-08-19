@@ -91,6 +91,7 @@ const App: FC = () => {
       // Show compass button when the map is not north-up
       setShouldShowCompass(mapboxMap.getBearing() !== 0)
     })
+    window.scrollTo(0, document.body.scrollHeight) // TEMP: for iPhone
   }, [])
 
   // When target times are fetched, set timeIndex to the latest observed time
