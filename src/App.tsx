@@ -59,13 +59,10 @@ const addRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
 }
 
 const removeRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
-  const { sourceId, layerId } = targetTimeToRadarId(targetTime)
+  const { layerId } = targetTimeToRadarId(targetTime)
   setTimeout(() => {
     if (typeof map.getLayer(layerId) !== 'undefined') {
       map.removeLayer(layerId)
-    }
-    if (typeof map.getSource(sourceId) !== 'undefined') {
-      map.removeSource(sourceId)
     }
   }, LAYER_TRANSITION_MSEC)
 }
