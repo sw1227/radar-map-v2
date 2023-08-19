@@ -47,7 +47,7 @@ export const GpsButton: FC<{
       disabled={isGettingLocation}
       style={{
         position: 'absolute',
-        bottom: '40px',
+        bottom: '80px',
         right: '10px',
         touchAction: 'none',
       }}

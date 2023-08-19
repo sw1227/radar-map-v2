@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, FC } from 'react'
+import { useState, useEffect, useRef, FC, useCallback } from 'react'
 import mapboxgl, { MapboxOptions } from 'mapbox-gl'
 import { useTargetTimes, TargetTime } from './hooks/useTargetTimes'
 import { Box } from '@chakra-ui/react'
 import { TargetTimeSlider } from './components/TargetTimeSlider'
 import { GpsButton } from './components/GpsButton'
 import { RefreshButton } from './components/RefreshButton'
+import { CompassButton } from './components/CompassButton'
 import './App.css'
 
 const options: MapboxOptions = {
@@ -75,6 +76,7 @@ const App: FC = () => {
   const [renderedTime, setRenderedTime] = useState<TargetTime | null>(null)
   const [location, setLocation] = useState<{ lng: number, lat: number } | null>(null)
   const gpsMarker = useRef<mapboxgl.Marker | null>(null)
+  const [shouldShowCompass, setShouldShowCompass] = useState(false)
 
   // Initialize map on first render
   useEffect(() => {
@@ -82,6 +84,10 @@ const App: FC = () => {
     setMap(mapboxMap)
     mapboxMap.on('load', () => {
       setIsMapLoaded(true)
+    })
+    mapboxMap.on('rotate', () => {
+      // Show compass button when the map is not north-up
+      setShouldShowCompass(mapboxMap.getBearing() !== 0)
     })
   }, [])
 
@@ -110,13 +116,17 @@ const App: FC = () => {
     map.flyTo({ center: [lng, lat] })
   }, [isMapLoaded, location, map])
 
+  // When compass button is clicked, reset the map bearing
+  const handleClickCompass = useCallback(() => {
+    map?.flyTo({ bearing: 0 })
+  }, [map])
 
   return (
     <>
       <div id="mapbox-map" />
       <Box style={{
         position: 'absolute',
-        bottom: '100px',
+        bottom: '48px',
         left: '10vw',
         width: '80vw',
         height: '24px',
@@ -137,6 +147,7 @@ const App: FC = () => {
       </Box>
       <GpsButton onChangeLocation={setLocation} />
       <RefreshButton onClick={refreshTargetTimes} />
+      {shouldShowCompass && <CompassButton onClick={handleClickCompass} />}
     </>
   )
 }

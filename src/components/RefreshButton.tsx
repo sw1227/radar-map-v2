@@ -22,7 +22,7 @@ export const RefreshButton: FC<{
       disabled={isFetching}
       style={{
         position: 'absolute',
-        bottom: '90px',
+        bottom: '130px',
         right: '10px',
         touchAction: 'none',
       }}
