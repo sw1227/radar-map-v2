@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import {
   Slider,
   SliderTrack,
@@ -23,6 +23,7 @@ export const TargetTimeSlider: FC<{
   timeIndex: number;
   onChangeIndex: (idx: number) => void;
 }> = ({ latestTimeIndex, targetTimes, timeIndex, onChangeIndex }) => {
+  const isFuture = timeIndex > latestTimeIndex
   return (
     <Slider
       aria-label='slider-time'
@@ -31,6 +32,7 @@ export const TargetTimeSlider: FC<{
       max={targetTimes.length - 1}
       step={1}
       onChange={onChangeIndex}
+      colorScheme={isFuture ? 'teal' : 'blue'}
     >
       {/* Slider labels for the oldest, current, and newest time */}
       {[0, latestTimeIndex, targetTimes.length - 1].map((idx) => (
@@ -45,7 +47,7 @@ export const TargetTimeSlider: FC<{
       {/* Slider label for the selected time */}
       <Tooltip
         hasArrow
-        bg='blue.500'
+        bg={isFuture ? 'teal.500' : 'blue.500'}
         color='white'
         placement='top'
         isOpen={true}
