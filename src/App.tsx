@@ -178,6 +178,25 @@ const App: FC = () => {
     if (radarLayerId) map.moveLayer(radarLayerId)
   }, [map, renderedTime])
 
+  // When the terrain ON/OFF is selected, add/remove the terrain
+  const handleSelectTerrain = useCallback((shouldShowTerrain: boolean) => {
+    if (!map) return
+    const sourceId = `mapbox-terrain-source`
+    if (shouldShowTerrain) {
+      if (!map.getSource(sourceId)) {
+        map.addSource(sourceId, {
+          type: 'raster-dem',
+          url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+          tileSize: 512,
+          maxzoom: 13,
+        })
+      }
+      map.setTerrain({ source: sourceId, exaggeration: 1.5 })
+    } else {
+      map.setTerrain()
+    }
+  }, [map])
+
   return (
     <>
       <div id="mapbox-map" />
@@ -207,7 +226,7 @@ const App: FC = () => {
         refreshTargetTimes()
         setTimeIndex(latestTimeIndex)
       }} />
-      <LayerButton onSelectLayer={handleSelectLayer}/>
+      <LayerButton onSelectLayer={handleSelectLayer} onSelectTerrain={handleSelectTerrain}/>
       {shouldShowCompass && <CompassButton onClick={handleClickCompass} />}
     </>
   )

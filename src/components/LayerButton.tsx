@@ -12,7 +12,8 @@ import { SlLayers } from 'react-icons/sl'
 
 export const LayerButton: FC<{
   onSelectLayer: (layer: { name: string, url: string } | null) => void,
-}> = ({ onSelectLayer }) => {
+  onSelectTerrain: (value: boolean) => void,
+}> = ({ onSelectLayer, onSelectTerrain }) => {
   return (
     <Menu placement='top-end'>
       <MenuButton
@@ -29,6 +30,15 @@ export const LayerButton: FC<{
         }}
       />
       <MenuList>
+        <MenuOptionGroup title='Terrain' type='radio' defaultValue='off'>
+          <MenuItemOption value='on' onClick={() => onSelectTerrain(true)}>
+            3D Terrain ON
+          </MenuItemOption>
+          <MenuItemOption value='off' onClick={() => onSelectTerrain(false)}>
+            3D Terrain OFF
+          </MenuItemOption>
+        </MenuOptionGroup>
+        <MenuDivider />
         <MenuOptionGroup title='Select tile' type='radio' defaultValue='base'>
           <MenuItemOption value='base' onClick={() => onSelectLayer(null)}>
             Basemap only
