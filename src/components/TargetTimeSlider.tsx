@@ -28,6 +28,7 @@ export const TargetTimeSlider: FC<{
     <Slider
       aria-label='slider-time'
       defaultValue={latestTimeIndex}
+      value={timeIndex}
       min={0}
       max={targetTimes.length - 1}
       step={1}

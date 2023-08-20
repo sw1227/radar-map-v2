@@ -203,7 +203,10 @@ const App: FC = () => {
         )}
       </Box>
       <GpsButton onChangeLocation={setLocation} />
-      <RefreshButton onClick={refreshTargetTimes} />
+      <RefreshButton onClick={async () => {
+        refreshTargetTimes()
+        setTimeIndex(latestTimeIndex)
+      }} />
       <LayerButton onSelectLayer={handleSelectLayer}/>
       {shouldShowCompass && <CompassButton onClick={handleClickCompass} />}
     </>
