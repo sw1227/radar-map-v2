@@ -8,6 +8,7 @@ import { RefreshButton } from './components/RefreshButton'
 import { CompassButton } from './components/CompassButton'
 import { LayerButton } from './components/LayerButton'
 import { LeftRightButton } from './components/LeftRightButton'
+import { TargetTimeBox } from './components/TargetTimeBox'
 import './App.css'
 
 const options: MapboxOptions = {
@@ -201,6 +202,7 @@ const App: FC = () => {
   return (
     <>
       <div id="mapbox-map" />
+      {renderedTime && <TargetTimeBox targetTime={renderedTime} />}
       <LeftRightButton
         type='left'
         disabled={typeof timeIndex !== 'number' || timeIndex <= 0}
