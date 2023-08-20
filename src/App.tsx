@@ -7,6 +7,7 @@ import { GpsButton } from './components/GpsButton'
 import { RefreshButton } from './components/RefreshButton'
 import { CompassButton } from './components/CompassButton'
 import { LayerButton } from './components/LayerButton'
+import { LeftRightButton } from './components/LeftRightButton'
 import './App.css'
 
 const options: MapboxOptions = {
@@ -200,6 +201,24 @@ const App: FC = () => {
   return (
     <>
       <div id="mapbox-map" />
+      <LeftRightButton
+        type='left'
+        disabled={typeof timeIndex !== 'number' || timeIndex <= 0}
+        onClick={() => {
+          if (typeof timeIndex === 'number' && timeIndex > 0) {
+            setTimeIndex(timeIndex - 1)
+          }
+        }}
+      />
+      <LeftRightButton
+        type='right'
+        disabled={typeof timeIndex !== 'number' || timeIndex >= targetTimes.length - 1}
+        onClick={() => {
+          if (typeof timeIndex === 'number' && timeIndex < targetTimes.length - 1) {
+            setTimeIndex(timeIndex + 1)
+          }
+        }}
+      />
       <Box style={{
         position: 'absolute',
         bottom: '48px',
