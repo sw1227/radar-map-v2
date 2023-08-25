@@ -223,7 +223,7 @@ const App: FC = () => {
       />
       <Box style={{
         position: 'absolute',
-        bottom: '48px',
+        bottom: '54px',
         left: '10vw',
         width: '80vw',
         height: '24px',

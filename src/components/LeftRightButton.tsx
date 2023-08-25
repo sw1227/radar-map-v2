@@ -18,7 +18,7 @@ export const LeftRightButton: FC<{
       onClick={onClick}
       style={{
         position: 'absolute',
-        bottom: '80px',
+        bottom: '8px',
         left: (type === 'left') ? 'calc(50% - 40px)' : 'calc(50% + 40px)',
         touchAction: 'none',
       }}
