@@ -20,7 +20,7 @@ const options: MapboxOptions = {
   center: [139.7, 35.7],
   zoom: 8,
 }
-const LAYER_TRANSITION_MSEC = 400
+const LAYER_TRANSITION_MSEC = 200
 
 const targetTimeToRadarId = (targetTime: TargetTime) => {
   const suffix = `${targetTime.basetime}-${targetTime.validtime}`
@@ -31,11 +31,11 @@ const targetTimeToRadarId = (targetTime: TargetTime) => {
 }
 
 // Add rain radar layer to the map for the given targetTime
-const addRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
+const updateRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
   const { sourceId, layerId } = targetTimeToRadarId(targetTime)
   const radarTileUrl = `https://www.jma.go.jp/bosai/jmatile/data/nowc/${targetTime.basetime}/none/${targetTime.validtime}/surf/hrpns/{z}/{x}/{y}.png`
 
-  // By setting maxzoom to only source, ovezooming works
+  // Add source and layer if not exists
   const source = map.getSource(sourceId)
   if (!source) {
     map.addSource(sourceId, {
@@ -43,6 +43,7 @@ const addRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
       tiles: [radarTileUrl],
       tileSize: 256,
       minzoom: 4,
+      // By setting maxzoom to only source, ovezooming works
       maxzoom: 10, // Seems to be the max
       attribution: 'Japan Meteorological Agency'
     })
@@ -58,15 +59,18 @@ const addRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
       }
     })
   }
-}
 
-const removeRadarLayer = (map: mapboxgl.Map, targetTime: TargetTime) => {
-  const { layerId } = targetTimeToRadarId(targetTime)
-  setTimeout(() => {
-    if (typeof map.getLayer(layerId) !== 'undefined') {
-      map.removeLayer(layerId)
-    }
-  }, LAYER_TRANSITION_MSEC)
+  // Remove other radar layers if exists
+  const otherRadarLayerIds = map.getStyle().layers
+    .filter(layer => layer.type === 'raster' && layer.id.startsWith('radar-layer-') && layer.id !== layerId)
+    .map(layer => layer.id)
+  otherRadarLayerIds.forEach(layerId => {
+    setTimeout(() => {
+      if (typeof map.getLayer(layerId) !== 'undefined') {
+        map.removeLayer(layerId)
+      }
+    }, LAYER_TRANSITION_MSEC)
+  })
 }
 
 const App: FC = () => {
@@ -104,8 +108,7 @@ const App: FC = () => {
     if (!isMapLoaded || targetTimes.length === 0 || typeof timeIndex !== 'number' || !map) return
     const targetTime = targetTimes[timeIndex]
     // Add layer for the new time and remove layer for the previously rendered time (if exists)
-    addRadarLayer(map, targetTime)
-    if (renderedTime && renderedTime.validtime !== targetTime.validtime) removeRadarLayer(map, renderedTime)
+    updateRadarLayer(map, targetTime)
     setRenderedTime(targetTime)
   }, [isMapLoaded, timeIndex, targetTimes, map, renderedTime])
 
